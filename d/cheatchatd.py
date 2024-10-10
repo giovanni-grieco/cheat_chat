@@ -1,5 +1,6 @@
 import time
-import daemon
+
+from address_book import AddressBook
 
 def run_daemon():
     #with daemon.DaemonContext(): facciamolo partire con il file
@@ -10,4 +11,5 @@ def run_daemon():
             time.sleep(10)  # Sleep for 10 seconds before repeating the task
 
 if __name__ == "__main__":
-    run_daemon()
+    ab = AddressBook()
+    #run_daemon()
