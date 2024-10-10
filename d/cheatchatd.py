@@ -2,7 +2,7 @@ import time
 import daemon
 
 def run_daemon():
-    with daemon.DaemonContext():
+    #with daemon.DaemonContext(): facciamolo partire con il file
         while True:
             # Daemon task, for example, logging or monitoring a file
             with open("/tmp/daemon-log.txt", "a") as f:
