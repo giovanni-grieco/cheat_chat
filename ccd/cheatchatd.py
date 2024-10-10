@@ -22,7 +22,7 @@ class CheatChatDaemon:
         print("Local IP address:", local_ip)
         print("Subnet mask:", subnet_mask)
         print("Broadcast address:", broadcast_address)
-        settings["broadcast_address"] = broadcast_address
+        settings["broadcast_address"] = "desktop-fedora"               # broadcast_address
         settings["local_ip"] = local_ip
         settings["subnet_mask"] = subnet_mask
         self.address_book = address_book.ConcurrentAddressBookProxy()
