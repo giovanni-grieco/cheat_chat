@@ -31,6 +31,7 @@ class CheatChatDaemon:
         self.send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.listen_sock.bind((settings["local_ip"], int(settings["port"])))
         self.send_sock.bind((settings["local_ip"],47853))
+        self.send_sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
     def run(self):
         #self.listen_udp()
