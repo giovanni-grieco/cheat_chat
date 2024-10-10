@@ -22,7 +22,7 @@ class CheatChatDaemon:
         print("Local IP address:", local_ip)
         print("Subnet mask:", subnet_mask)
         print("Broadcast address:", broadcast_address)
-        settings["broadcast_address"] = broadcast_address
+        settings["broadcast_address"] = "desktop-fedora"               # broadcast_address
         settings["local_ip"] = local_ip
         settings["subnet_mask"] = subnet_mask
         self.address_book = address_book.ConcurrentAddressBookProxy()
@@ -31,6 +31,7 @@ class CheatChatDaemon:
         self.send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.listen_sock.bind((settings["local_ip"], int(settings["port"])))
         self.send_sock.bind((settings["local_ip"],47853))
+        self.send_sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
     def run(self):
         #self.listen_udp()
@@ -49,8 +50,8 @@ class CheatChatDaemon:
     
     def advertise(self):
         while True:
-            nu.send_udp_packet("CCProto|Hello", settings["broadcast_address"], int(settings["port"]), self.send_sock)
-            time.sleep(10)
+            nu.send_udp_packet("CCProto|Marco", settings["broadcast_address"], int(settings["port"]), self.send_sock)
+            time.sleep(2)
 
 if __name__ == "__main__":
     daemon = CheatChatDaemon()
