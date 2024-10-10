@@ -23,3 +23,10 @@ def calculate_broadcast_address(local_ip: str, subnet_mask: str) -> str:
     # Convert the broadcast address back to dotted decimal format
     broadcast_address = socket.inet_ntoa(struct.pack('!I', broadcast_bin))
     return broadcast_address
+
+def send_udp_packet(message, address, port, sock):
+    # Create a UDP socket
+    # Send the UDP packet
+    sock.sendto(message.encode(), (address, port))
+    print(f"Sent message: {message} to {address}:{port}")
+    
