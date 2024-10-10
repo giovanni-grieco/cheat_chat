@@ -3,6 +3,8 @@ import address_book
 import network_utils as nu
 import socket
 import threading
+import random
+import peer
 
 settings = {}
 
@@ -22,7 +24,7 @@ class CheatChatDaemon:
         print("Local IP address:", local_ip)
         print("Subnet mask:", subnet_mask)
         print("Broadcast address:", broadcast_address)
-        settings["broadcast_address"] = "desktop-fedora"               # broadcast_address
+        settings["broadcast_address"] = broadcast_address #"desktop-fedora"
         settings["local_ip"] = local_ip
         settings["subnet_mask"] = subnet_mask
         self.address_book = address_book.ConcurrentAddressBookProxy()
@@ -36,14 +38,20 @@ class CheatChatDaemon:
         self.stop_event = threading.Event()
 
     def run(self):
-        listenerThread = threading.Thread(target=self.listen_udp)
-        advertiserThread = threading.Thread(target=self.advertise)
-        listenerThread.start()
-        advertiserThread.start()
-        reader = input("Press enter to stop\n")
-        self.stop_event.set()
-        listenerThread.join()
-        advertiserThread.join()
+        try:
+            listenerThread = threading.Thread(target=self.listen_udp)
+            advertiserThread = threading.Thread(target=self.advertise)
+            listenerThread.start()
+            advertiserThread.start()
+            listenerThread.join()
+            advertiserThread.join()
+        except KeyboardInterrupt:
+            self.stop_event.set()
+            listenerThread.join()
+            advertiserThread.join()
+            self.listen_sock.close()
+            self.send_sock.close()
+            print("Exiting...")
 
     def listen_udp(self):
         print(f"Listening on {settings["local_ip"]}:{int(settings["port"])}")
@@ -52,21 +60,34 @@ class CheatChatDaemon:
             try:
                 data, addr = self.listen_sock.recvfrom(1024)
                 address_string = addr[0]
-                print(f"Received message: {data} from {addr}")
+                #print(f"Received message: {data} from {addr}")
                 if(address_string != settings["local_ip"]):
                     print(f"Received message: {data} from {addr}")
+                    event = str(data.split(b"|")[1])
+                    username = str(data.split(b"|")[2])
+                    if(event == "Hello"):
+                        new_peer : peer.Peer = peer.Peer(username, address_string, time.time())
+                        self.address_book.addPeer(new_peer) #Forse non funziona lui?
+                    elif(event == "Bye"):
+                        self.address_book.remove_address(address_string)
+                else:
+                    print("Received message from self")
+            
+                print(self.address_book.to_string()) # NON FUNZIONA???
+
             except socket.timeout:
                 continue
+        print("Stopping listener")
         
                 
         
 
     def advertise(self):
         while not self.stop_event.is_set():
-            nu.send_udp_packet("CCProto|Hello", settings["broadcast_address"], int(settings["port"]), self.send_sock)
-            time.sleep(1)
+            nu.send_udp_packet(f"CCProto|Hello|{settings["username"]}", settings["broadcast_address"], int(settings["port"]), self.send_sock)
+            time.sleep(10+random.randint(-5, 5))
         print("Stopping advertiser")
-        nu.send_udp_packet("CCProto|Bye", settings["broadcast_address"], int(settings["port"]), self.send_sock)
+        nu.send_udp_packet(f"CCProto|Hello|{settings["username"]}", settings["broadcast_address"], int(settings["port"]), self.send_sock)
 
 if __name__ == "__main__":
     daemon = CheatChatDaemon()

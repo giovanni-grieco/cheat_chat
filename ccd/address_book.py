@@ -20,6 +20,12 @@ class AddressBook:
             if peer.username == username:
                 return peer
         return None
+    
+    def to_string (self):
+        string : str = ""
+        for peer in self.peers:
+            string += peer.to_string() + "\n"
+        return string
 
 class ConcurrentAddressBookProxy(AddressBook):
     def __init__(self):
@@ -28,7 +34,12 @@ class ConcurrentAddressBookProxy(AddressBook):
 
     def addPeer(self, peer: Peer):
         with self.lock:
-            self.peers.append(peer)
+            if(peer not in self.peers):
+                self.peers.append(peer)
+            else:
+                for p in self.peers:
+                    if p.equals(peer):
+                        p.last_seen = peer.last_seen
 
     def removePeer(self, peer: Peer):
         with self.lock:
