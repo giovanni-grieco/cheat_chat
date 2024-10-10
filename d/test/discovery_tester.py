@@ -14,6 +14,6 @@ def send_udp_packet(message, address, port):
 
 if __name__ == "__main__":
     message = "Hello, UDP!"
-    address = "nachos"  # Replace with the target address
+    address = "localhost"  # Replace with the target address
     port = 10011  # Replace with the target port
     send_udp_packet(message, address, port)
