@@ -1,3 +1,3 @@
-# cheat_chat
+# Cheat Chat
 
-A simple peer 2 peer chat with peer discovery service.
+A simple peer 2 peer chat with local peer discovery protocol
