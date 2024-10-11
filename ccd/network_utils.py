@@ -29,7 +29,7 @@ def send_udp_packet(message, address, port, sock):
     # Create a UDP socket
     # Send the UDP packet
     sock.sendto(message.encode(), (address, port))
-    print(f"Sent message: {message} to {address}:{port}")
+    #print(f"Sent message: {message} to {address}:{port}")
 
 def get_default_interface():
     # Run the 'ip route show default' command

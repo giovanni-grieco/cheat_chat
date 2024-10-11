@@ -4,9 +4,9 @@ import socket
 import threading
 import random
 import system_utils as su
-
-from ccd.address_book import ConcurrentAddressBookProxy
-from ccd.peer import Peer
+from address_book import ConcurrentAddressBookProxy
+from peer import Peer
+from protocol import MessageType
 
 settings = {}
 
@@ -60,25 +60,31 @@ class CheatChatDaemon:
         self.send_sock.bind((settings["local_ip"],47853))
         self.send_sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
+    def listen_for_message(self):
+        data, addr = self.listen_sock.recvfrom(1024)
+        address_string = addr[0]
+        # print(f"Received message: {data} from {addr}")
+        if address_string != settings["local_ip"]:
+            print(f"Received message: {data} from {addr}")
+            event = data.split(b"|")[1].decode()
+            username = data.split(b"|")[2].decode()
+            sender: Peer = Peer(username, address_string, time.time())
+            if event == MessageType.HELLO.value:
+                self.address_book.add_peer(sender)  # Forse non funziona lui?
+            elif event == MessageType.BYE.value:
+                self.address_book.remove_peer(sender)
+            elif event == MessageType.POKE.value:
+                self.address_book.add_peer(sender)
+                su.send_notification(f"{username} poked you")
+        else:
+            print("Received message from self")
+
     def listen_udp(self):
         print(f"Listening on {settings["local_ip"]}:{int(settings["port"])}")
         self.listen_sock.settimeout(1)
         while not self.stop_event.is_set():
             try:
-                data, addr = self.listen_sock.recvfrom(1024)
-                address_string = addr[0]
-                #print(f"Received message: {data} from {addr}")
-                if address_string == settings["local_ip"]:
-                    print(f"Received message: {data} from {addr}")
-                    event = data.split(b"|")[1].decode()
-                    username = data.split(b"|")[2].decode()
-                    sender: Peer = Peer(username, address_string, time.time())
-                    if event == 'Hello':
-                        self.address_book.add_peer(sender) #Forse non funziona lui?
-                    elif event == 'Bye':
-                        self.address_book.remove_peer(sender)
-                else:
-                    print("Received message from self")
+                self.listen_for_message()
                 #print(self.address_book.to_string())
             except socket.timeout:
                 continue
@@ -90,6 +96,7 @@ class CheatChatDaemon:
             time.sleep(10+random.randint(-5, 5))
         print("Stopping advertiser")
         nu.send_udp_packet(f"CCProto|Bye|{settings["username"]}", settings["broadcast_address"], int(settings["port"]), self.send_sock)
+
 
     def run(self):
         try:

@@ -1,7 +1,7 @@
 # Use an official Debian as a parent image
-FROM python:slim-bookworm
+FROM python:bookworm
 
-RUN apt-get update && apt-get install -y libpq-dev gcc
+RUN apt-get update && apt-get install -y libpq-dev gcc net-tools iproute2 htop
 # Copy your Python application code to the container
 COPY . /ccd
 
