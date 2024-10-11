@@ -1,8 +1,12 @@
 import socket
 import time
 from ccd import network_utils
+from ccd import system_utils
 
 if __name__ == "__main__":
+
+    system_utils.send_notification("Hello, UDP!")
+
     message = "Hello, UDP!"
     address = "192.168.1.255"  # Replace with the target address
     port = 10011  # Replace with the target port
