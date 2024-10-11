@@ -17,6 +17,7 @@ def load_settings():
 
 class CheatChatDaemon:
     def __init__(self):
+        self.send_sock = None
         load_settings()
         default_interface = nu.get_default_interface()
         settings["netinterface"] = default_interface
@@ -45,16 +46,16 @@ class CheatChatDaemon:
 
     def run(self):
         try:
-            listenerThread = threading.Thread(target=self.listen_udp)
-            advertiserThread = threading.Thread(target=self.advertise)
-            listenerThread.start()
-            advertiserThread.start()
-            listenerThread.join()
-            advertiserThread.join()
+            listener_thread = threading.Thread(target=self.listen_udp)
+            advertiser_thread = threading.Thread(target=self.advertise)
+            listener_thread.start()
+            advertiser_thread.start()
+            listener_thread.join()
+            advertiser_thread.join()
         except KeyboardInterrupt:
             self.stop_event.set()
-            listenerThread.join()
-            advertiserThread.join()
+            listener_thread.join()
+            advertiser_thread.join()
             self.listen_sock.close()
             self.send_sock.close()
             print("Exiting...")
@@ -67,15 +68,15 @@ class CheatChatDaemon:
                 data, addr = self.listen_sock.recvfrom(1024)
                 address_string = addr[0]
                 #print(f"Received message: {data} from {addr}")
-                if(address_string != settings["local_ip"]):
+                if address_string != settings["local_ip"]:
                     print(f"Received message: {data} from {addr}")
                     event = str(data.split(b"|")[1])
                     username = str(data.split(b"|")[2])
-                    if(event == "Hello"):
-                        new_peer : peer.Peer = peer.Peer(username, address_string, time.time())
-                        self.address_book.addPeer(new_peer) #Forse non funziona lui?
-                    elif(event == "Bye"):
-                        self.address_book.remove_address(address_string)
+                    sender: peer.Peer = peer.Peer(username, address_string, str(time.time()))
+                    if event == "Hello":
+                        self.address_book.addPeer(sender) #Forse non funziona lui?
+                    elif event == "Bye":
+                        self.address_book.removePeer(sender)
                 else:
                     print("Received message from self")
             

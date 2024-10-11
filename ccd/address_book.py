@@ -34,7 +34,7 @@ class ConcurrentAddressBookProxy(AddressBook):
 
     def addPeer(self, peer: Peer):
         with self.lock:
-            if(peer not in self.peers):
+            if peer not in self.peers:
                 self.peers.append(peer)
             else:
                 for p in self.peers:
