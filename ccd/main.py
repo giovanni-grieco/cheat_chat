@@ -74,7 +74,7 @@ class CheatChatDaemon:
             nu.send_udp_packet(f"CCProto|Hello|{settings["username"]}", settings["broadcast_address"], int(settings["port"]), self.send_sock)
             time.sleep(10+random.randint(-5, 5))
         print("Stopping advertiser")
-        nu.send_udp_packet(f"CCProto|Hello|{settings["username"]}", settings["broadcast_address"], int(settings["port"]), self.send_sock)
+        nu.send_udp_packet(f"CCProto|Bye|{settings["username"]}", settings["broadcast_address"], int(settings["port"]), self.send_sock)
 
     def run(self):
         try:
