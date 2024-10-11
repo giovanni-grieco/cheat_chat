@@ -1,0 +1,16 @@
+[Unit]
+Description=CCDaemon
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ccd
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=CCDaemon
+
+
+[Install]
+WantedBy=multi-user.target

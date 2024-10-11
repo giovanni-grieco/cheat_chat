@@ -1,5 +1,5 @@
 from ccd.address_book import AddressBook
-from ccd.peer import Peer
+from ccd.convos.peer import Peer
 import time
 
 def address_book_add():

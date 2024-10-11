@@ -1,4 +1,4 @@
-from peer import Peer
+from ccd.convos.peer import Peer
 import threading
 
 class AddressBook:
