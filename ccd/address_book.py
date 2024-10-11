@@ -13,7 +13,8 @@ class AddressBook:
             self.peers[self.peers.index(peer)].last_seen = peer.last_seen
     
     def remove_peer (self, peer: Peer):
-        self.peers.remove(peer)
+        if peer in self.peers:
+            self.peers.remove(peer)
     
     def get_peers (self):
         return self.peers
@@ -28,7 +29,7 @@ class AddressBook:
         string : str = "Address Book\n"
         linecount = 1
         for peer in self.peers:
-            string += str(linecount)+") "+ peer.to_string() + "\n"
+            string += peer.to_string() + "\n"
             linecount += 1
         return string
 

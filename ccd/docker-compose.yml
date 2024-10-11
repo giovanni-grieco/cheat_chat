@@ -1,0 +1,9 @@
+services:
+  ccd:
+    build: .
+    container_name: ccd_container
+    ports:
+      - "10011:10011"
+    volumes:
+      - .:/ccd
+    restart: always

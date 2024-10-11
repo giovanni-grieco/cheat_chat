@@ -3,6 +3,7 @@ import network_utils as nu
 import socket
 import threading
 import random
+import system_utils as su
 
 from ccd.address_book import ConcurrentAddressBookProxy
 from ccd.peer import Peer
@@ -11,18 +12,32 @@ settings = {}
 
 def load_settings():
     global settings
-    with open("settings.conf") as f:
-        for line in f:
-            key, value = line.strip().split("=")
-            settings[key] = value
+    try:
+        with open("settings.conf") as f:
+            for line in f:
+                key, value = line.strip().split("=")
+                settings[key] = value
+    except FileNotFoundError:
+        print("Settings file not found")
+
+def load_default_fallback_settings():
+    global settings
+    if "port" not in settings:
+        settings["port"] = "10011"
+        print("Falling back on default port 10011")
+    if "username" not in settings:
+        settings["username"] = su.get_system_username()
+        print("Falling back on system username: "+ su.get_system_username())#system user name
+    if "netinterface" not in settings:
+        default_interface = nu.get_default_interface()
+        settings["netinterface"] = default_interface
+        print("Falling back on default network interface:", default_interface)
 
 class CheatChatDaemon:
     def __init__(self):
         self.send_sock = None
         load_settings()
-        default_interface = nu.get_default_interface()
-        settings["netinterface"] = default_interface
-        print("Default network interface:", default_interface)
+        load_default_fallback_settings()
         local_ip = nu.get_local_ip(settings["netinterface"])
         subnet_mask = nu.get_subnet_mask(settings["netinterface"])
         broadcast_address = nu.calculate_broadcast_address(local_ip, subnet_mask)
@@ -53,7 +68,7 @@ class CheatChatDaemon:
                 data, addr = self.listen_sock.recvfrom(1024)
                 address_string = addr[0]
                 #print(f"Received message: {data} from {addr}")
-                if address_string != settings["local_ip"]:
+                if address_string == settings["local_ip"]:
                     print(f"Received message: {data} from {addr}")
                     event = data.split(b"|")[1].decode()
                     username = data.split(b"|")[2].decode()
@@ -64,7 +79,7 @@ class CheatChatDaemon:
                         self.address_book.remove_peer(sender)
                 else:
                     print("Received message from self")
-
+                #print(self.address_book.to_string())
             except socket.timeout:
                 continue
         print("Stopping listener")
