@@ -6,7 +6,7 @@ import random
 import system_utils as su
 from address_book import ConcurrentAddressBookProxy
 from peer import Peer
-from protocol import MessageType
+import protocol
 
 settings = {}
 
@@ -69,11 +69,11 @@ class CheatChatDaemon:
             event = data.split(b"|")[1].decode()
             username = data.split(b"|")[2].decode()
             sender: Peer = Peer(username, address_string, time.time())
-            if event == MessageType.HELLO.value:
+            if event == protocol.MessageType.HELLO.value:
                 self.address_book.add_peer(sender)  # Forse non funziona lui?
-            elif event == MessageType.BYE.value:
+            elif event == protocol.MessageType.BYE.value:
                 self.address_book.remove_peer(sender)
-            elif event == MessageType.POKE.value:
+            elif event == protocol.MessageType.POKE.value:
                 self.address_book.add_peer(sender)
                 su.send_notification(f"{username} poked you")
         else:
@@ -92,10 +92,10 @@ class CheatChatDaemon:
 
     def advertise(self):
         while not self.stop_event.is_set():
-            nu.send_udp_packet(f"CCProto|Hello|{settings["username"]}", settings["broadcast_address"], int(settings["port"]), self.send_sock)
+            nu.send_udp_packet(protocol.make_hello_packet(settings["username"]), settings["broadcast_address"], int(settings["port"]), self.send_sock)
             time.sleep(10+random.randint(-5, 5))
         print("Stopping advertiser")
-        nu.send_udp_packet(f"CCProto|Bye|{settings["username"]}", settings["broadcast_address"], int(settings["port"]), self.send_sock)
+        nu.send_udp_packet(protocol.make_bye_packet(settings["username"]), settings["broadcast_address"], int(settings["port"]), self.send_sock)
 
 
     def run(self):
@@ -114,18 +114,10 @@ class CheatChatDaemon:
             self.send_sock.close()
             print("Exiting...")
 
-def test():
-    peer = Peer("Henderson", "1.2.3.4", time.time())
-    print(peer.to_string())
-    address_book = ConcurrentAddressBookProxy()
-    address_book.add_peer(peer)
-    print(address_book.to_string())
-
 def run_daemon():
     daemon = CheatChatDaemon()
     daemon.run()
 
 if __name__ == "__main__":
-    #test()
     run_daemon()
 
