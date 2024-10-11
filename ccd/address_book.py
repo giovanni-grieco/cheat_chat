@@ -6,25 +6,30 @@ class AddressBook:
     def __init__ (self):
         self.peers = []
 
-    def addPeer (self, peer: Peer):
-        self.peers.append(peer)
+    def add_peer (self, peer: Peer):
+        if peer not in self.peers:
+            self.peers.append(peer)
+        else:
+            self.peers[self.peers.index(peer)].last_seen = peer.last_seen
     
-    def removePeer (self, peer: Peer):
+    def remove_peer (self, peer: Peer):
         self.peers.remove(peer)
     
-    def getPeers (self):
+    def get_peers (self):
         return self.peers
     
-    def findPeer (self, username: str):
+    def find_peer (self, username: str):
         for peer in self.peers:
             if peer.username == username:
                 return peer
         return None
     
     def to_string (self):
-        string : str = ""
+        string : str = "Address Book\n"
+        linecount = 1
         for peer in self.peers:
-            string += peer.to_string() + "\n"
+            string += str(linecount)+") "+ peer.to_string() + "\n"
+            linecount += 1
         return string
 
 class ConcurrentAddressBookProxy(AddressBook):
@@ -32,26 +37,18 @@ class ConcurrentAddressBookProxy(AddressBook):
         super().__init__()
         self.lock = threading.Lock()
 
-    def addPeer(self, peer: Peer):
+    def add_peer(self, peer: Peer):
         with self.lock:
-            if peer not in self.peers:
-                self.peers.append(peer)
-            else:
-                for p in self.peers:
-                    if p.equals(peer):
-                        p.last_seen = peer.last_seen
+            super().add_peer(peer)
 
-    def removePeer(self, peer: Peer):
+    def remove_peer(self, peer: Peer):
         with self.lock:
-            self.peers.remove(peer)
+            super().remove_peer(peer)
 
-    def getPeers(self):
+    def get_peers(self):
         with self.lock:
-            return self.peers
+            return super().peers
 
-    def findPeer(self, username: str):
+    def find_peer(self, username: str):
         with self.lock:
-            for peer in self.peers:
-                if peer.username == username:
-                    return peer
-        return None
+            return super().find_peer(username)
