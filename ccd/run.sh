@@ -1,1 +1,1 @@
-python3 cheatchatd.py
+python3 main.py

@@ -18,6 +18,9 @@ def load_settings():
 class CheatChatDaemon:
     def __init__(self):
         load_settings()
+        default_interface = nu.get_default_interface()
+        settings["netinterface"] = default_interface
+        print("Default network interface:", default_interface)
         local_ip = nu.get_local_ip(settings["netinterface"])
         subnet_mask = nu.get_subnet_mask(settings["netinterface"])
         broadcast_address = nu.calculate_broadcast_address(local_ip, subnet_mask)
@@ -29,13 +32,16 @@ class CheatChatDaemon:
         settings["subnet_mask"] = subnet_mask
         self.address_book = address_book.ConcurrentAddressBookProxy()
         self.listen_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.network_setup()
+        self.stop_event = threading.Event()
+
+    def network_setup(self):
         self.send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.listen_sock.bind(("0.0.0.0", int(settings["port"])))
         self.listen_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.listen_sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         self.send_sock.bind((settings["local_ip"],47853))
         self.send_sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        self.stop_event = threading.Event()
 
     def run(self):
         try:

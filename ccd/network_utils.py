@@ -1,6 +1,7 @@
 import socket
 import netifaces
 import struct
+import subprocess
 
 def get_local_ip(interface: str):
     # Create a socket and connect to an external server
@@ -29,4 +30,24 @@ def send_udp_packet(message, address, port, sock):
     # Send the UDP packet
     sock.sendto(message.encode(), (address, port))
     print(f"Sent message: {message} to {address}:{port}")
+
+def get_default_interface():
+    # Run the 'ip route show default' command
+    result = subprocess.run(['ip', 'route', 'show', 'default'], stdout=subprocess.PIPE, text=True)
+
+    # Extract the default interface from the command output
+    for line in result.stdout.splitlines():
+        if 'default' in line:
+            return line.split()[4]  # The 5th field is the interface (after 'dev')
+
+    return None  # If no default interface is found
+
+# Usage
+if __name__ == "__main__":
+    default_interface = get_default_interface()
+    if default_interface:
+        print(f"Default network interface: {default_interface}")
+    else:
+        print("No default network interface found.")
+
     
