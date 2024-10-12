@@ -4,3 +4,7 @@
 */.idea
 */__pycache/*
 */venv/
+/main.bin/
+/main.build/
+/main.dist/
+/main.onefile-build/
