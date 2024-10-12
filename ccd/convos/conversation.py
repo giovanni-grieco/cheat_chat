@@ -1,3 +1,4 @@
+from ccd.convos.message import Message
 from ccd.observer.observer import Publisher
 
 
@@ -6,7 +7,7 @@ class Conversation(Publisher):
         super().__init__()
         self.messages = []
 
-    def add_message(self, message):
+    def add_message(self, message: Message):
         self.messages.append(message)
         self.notify(message)
 

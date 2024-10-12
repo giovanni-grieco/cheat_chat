@@ -1,22 +1,31 @@
 import threading
 from ccd import protocol
-from ccd.address_book import ConcurrentAddressBookProxy
 import socket
 import system_utils as su
+from ccd.address_book.address_book import AddressBook
+from ccd.address_book.concurrent_address_book_proxy import ConcurrentAddressBookProxy
 from ccd.convos.message import Message
 from ccd.convos.peer import Peer
 import network_utils as nu
 import time
 import random
 
+from ccd.message_parser.crypto_message_parser_proxy import CryptoMessageParserProxy
+from ccd.message_parser.message_parser import MessageParser
+
 
 class CheatChatDaemon:
 
     settings = {}
+    message_parser : MessageParser
+    address_book : AddressBook
+    listen_sock : socket.socket
+    send_sock : socket.socket
+    stop_event : threading.Event
+
 
     def __init__(self, settingss):
         self.settings = settingss
-        self.send_sock = None
         local_ip = nu.get_local_ip(self.settings["netinterface"])
         subnet_mask = nu.get_subnet_mask(self.settings["netinterface"])
         broadcast_address = nu.calculate_broadcast_address(local_ip, subnet_mask)
@@ -26,10 +35,13 @@ class CheatChatDaemon:
         self.settings["broadcast_address"] = broadcast_address #"desktop-fedora"
         self.settings["local_ip"] = local_ip
         self.settings["subnet_mask"] = subnet_mask
-        self.address_book = ConcurrentAddressBookProxy()
         self.listen_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.network_setup()
         self.stop_event = threading.Event()
+
+        #Address book e message parsers dovrebbero essere gestiti da un context e delle factory
+        self.address_book = ConcurrentAddressBookProxy(AddressBook())
+        self.message_parser = CryptoMessageParserProxy(MessageParser())
 
     def network_setup(self):
         self.send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -61,7 +73,7 @@ class CheatChatDaemon:
             print("Received message from self")
 
     def parse_message(self, data, address_string):
-        event, sender_username, content = protocol.parse_packet(data)
+        event, sender_username, content = self.message_parser.parse_message(data)
         sender: Peer = Peer(sender_username, address_string, time.time())
         if event == protocol.MessageType.HELLO.value:
             self.address_book.add_peer(sender)  # Forse non funziona lui?
@@ -84,8 +96,8 @@ class CheatChatDaemon:
         nu.send_udp_packet(protocol.make_bye_packet(self.settings["username"]), self.settings["broadcast_address"], int(self.settings["port"]), self.send_sock)
 
     def send_message(self, dest_username, content):
-        dest_peer = self.address_book.find_peer(dest_username)
-        message = Message(self.settings["username"], content)
+        dest_peer: Peer = self.address_book.find_peer(dest_username)
+        message: Message = Message(self.settings["username"], content)
         dest_peer.add_message(message)
         if dest_peer is not None:
             nu.send_udp_packet(protocol.make_message_packet(self.settings["username"], content), dest_peer.ip, int(self.settings["port"]), self.send_sock)

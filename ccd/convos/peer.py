@@ -1,4 +1,5 @@
 from ccd.convos.conversation import Conversation
+from ccd.convos.message import Message
 
 
 class Peer:
@@ -14,7 +15,7 @@ class Peer:
         self.last_seen = last_seen
         self.conversations = Conversation()
 
-    def add_message(self, message):
+    def add_message(self, message: Message):
         self.conversations.add_message(message)
 
     def flush_conversation(self):
@@ -23,7 +24,7 @@ class Peer:
     def __str__(self) -> str:
         return self.username + " " + self.ip + " " + str(self.last_seen)
 
-    def __eq__(self, peer):
+    def __eq__(self, peer) -> bool:
         return self.username == peer.username and self.ip == peer.ip
 
     def __hash__(self):

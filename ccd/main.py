@@ -28,12 +28,9 @@ def load_default_fallback_settings():
         print("Falling back on default network interface:", default_interface)
 
 
-def run_daemon():
-    daemon = CheatChatDaemon(settings)
-    daemon.run()
-
 if __name__ == "__main__":
     load_settings()
     load_default_fallback_settings()
-    run_daemon()
+    daemon = CheatChatDaemon(settings)
+    daemon.run()
 
