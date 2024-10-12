@@ -1,7 +1,7 @@
-import ccd.network_utils as nu
-from ccd.protocol import make_poke_packet
 import socket
 
+import network_utils as nu
+from protocol import make_poke_packet
 
 if __name__ == "__main__":
     message = "Hello, UDP!"

@@ -1,5 +1,5 @@
-from ccd.message_parser.message_parser import MessageParser
-from ccd.protocol import MessageType
+from message_parser.message_parser import MessageParser
+from protocol import MessageType
 
 
 class CryptoMessageParserProxy(MessageParser):

@@ -1,6 +1,6 @@
 import network_utils as nu
 import system_utils as su
-from ccd.daemon import CheatChatDaemon
+from daemon import CheatChatDaemon
 
 settings = {}
 

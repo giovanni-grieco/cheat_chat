@@ -1,7 +1,9 @@
 import socket
-import netifaces
 import struct
 import subprocess
+
+import netifaces
+
 
 def get_local_ip(interface: str):
     # Create a socket and connect to an external server

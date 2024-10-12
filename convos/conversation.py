@@ -1,5 +1,5 @@
-from ccd.convos.message import Message
-from ccd.observer.observer import Publisher
+from convos.message import Message
+from observer.observer import Publisher
 
 
 class Conversation(Publisher):

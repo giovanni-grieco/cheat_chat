@@ -1,7 +1,8 @@
 import socket
 import time
-from ccd import network_utils
-from ccd import system_utils
+
+import network_utils
+import system_utils
 
 if __name__ == "__main__":
 

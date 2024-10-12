@@ -3,7 +3,10 @@ services:
     build: .
     container_name: ccd_container
     ports:
-      - "10011:10011"
+        - protocol: udp
+          target: 10011
+          published: 10013
+          mode: host
     volumes:
       - .:/ccd
     restart: always

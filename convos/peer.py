@@ -1,5 +1,5 @@
-from ccd.convos.conversation import Conversation
-from ccd.convos.message import Message
+from convos.conversation import Conversation
+from convos.message import Message
 
 
 class Peer:

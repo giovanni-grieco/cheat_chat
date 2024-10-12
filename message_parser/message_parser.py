@@ -1,5 +1,5 @@
-from ccd import protocol
-from ccd.protocol import MessageType
+import protocol
+from protocol import MessageType
 
 
 class MessageParser:

@@ -1,17 +1,17 @@
-import threading
-from ccd import protocol
-import socket
-import system_utils as su
-from ccd.address_book.address_book import AddressBook
-from ccd.address_book.concurrent_address_book_proxy import ConcurrentAddressBookProxy
-from ccd.convos.message import Message
-from ccd.convos.peer import Peer
-import network_utils as nu
-import time
 import random
+import socket
+import threading
+import time
 
-from ccd.message_parser.crypto_message_parser_proxy import CryptoMessageParserProxy
-from ccd.message_parser.message_parser import MessageParser
+import network_utils as nu
+import system_utils as su
+import protocol
+from address_book.address_book import AddressBook
+from address_book.concurrent_address_book_proxy import ConcurrentAddressBookProxy
+from convos.message import Message
+from convos.peer import Peer
+from message_parser.crypto_message_parser_proxy import CryptoMessageParserProxy
+from message_parser.message_parser import MessageParser
 
 
 class CheatChatDaemon:

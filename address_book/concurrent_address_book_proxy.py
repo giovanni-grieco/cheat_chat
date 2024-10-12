@@ -1,6 +1,7 @@
 import threading
-from ccd.address_book.address_book import AddressBook
-from ccd.convos.peer import Peer
+
+from address_book.address_book import AddressBook
+from convos.peer import Peer
 
 
 class ConcurrentAddressBookProxy(AddressBook):
