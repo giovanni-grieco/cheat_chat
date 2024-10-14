@@ -6,6 +6,7 @@ class AddressBook:
 
     def add_peer (self, peer: Peer):
         if peer not in self.peers:
+            print(peer)
             self.peers.append(peer)
         else:
             self.peers[self.peers.index(peer)].last_seen = peer.last_seen
@@ -27,6 +28,6 @@ class AddressBook:
         string : str = "Address Book\n"
         linecount = 1
         for peer in self.peers:
-            string += peer.to_string() + "\n"
+            string += str(peer) + "\n"
             linecount += 1
         return string

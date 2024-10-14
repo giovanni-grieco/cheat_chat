@@ -75,18 +75,21 @@ class CheatChatDaemon:
     def parse_message(self, data, address_string):
         event, sender_username, content = self.message_parser.parse_message(data)
         sender: Peer = Peer(sender_username, address_string, time.time())
-        if event == protocol.MessageType.HELLO.value:
+        print("Event:" +event.value)
+        if event == protocol.MessageType.HELLO:
+            print("HELLO PACKET!")
             self.address_book.add_peer(sender)  # Forse non funziona lui?
-        elif event == protocol.MessageType.BYE.value:
+        elif event == protocol.MessageType.BYE:
             self.address_book.remove_peer(sender)
-        elif event == protocol.MessageType.POKE.value:
+        elif event == protocol.MessageType.POKE:
             self.address_book.add_peer(sender)
             su.send_notification(f"{sender_username} poked you")
-        elif event == protocol.MessageType.MESSAGE.value:
+        elif event == protocol.MessageType.MESSAGE:
             print(f"Message from {sender_username}: {content}")
             #Capire se il messaggio è per l'utente corrente. In cosa non lo fosse, lo si ignora.
             #Accedere all'address-book, vedere se già esiste il contatto.
             #Se non esiste crearlo, e poi aggiungere il messaggio alla chat.
+        print(self.address_book)
 
     def advertise(self):
         while not self.stop_event.is_set():
