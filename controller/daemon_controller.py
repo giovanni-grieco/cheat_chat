@@ -7,9 +7,7 @@ from address_book.address_book import AddressBook
 from convos.peer import Peer
 import network.network_utils as nu
 import random
-
 from message_parser.message_parser import MessageParser
-
 
 class DaemonController:
 
@@ -33,14 +31,14 @@ class DaemonController:
     def network_setup(self):
         self.listen_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.listen_sock.bind(("0.0.0.0", int(self.settings["port"])))
+        self.listen_sock.bind(("0.0.0.0", int(self.settings["dport"])))
         self.listen_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.listen_sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         self.send_sock.bind((self.settings["local_ip"], 47853))
         self.send_sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
     def listen_udp(self):
-        print(f"Listening on {self.settings["local_ip"]}:{int(self.settings["port"])}")
+        print(f"Listening on {self.settings["local_ip"]}:{int(self.settings["dport"])}")
         self.listen_sock.settimeout(1)
         while not self.stop_event.is_set():
             try:
@@ -78,10 +76,10 @@ class DaemonController:
 
     def advertise(self):
         while not self.stop_event.is_set():
-            nu.send_udp_packet(protocol.make_hello_packet(self.settings["username"]), self.settings["broadcast_address"], int(self.settings["port"]), self.send_sock)
+            nu.send_udp_packet(protocol.make_hello_packet(self.settings["username"]), self.settings["broadcast_address"], int(self.settings["dport"]), self.send_sock)
             time.sleep(10+random.randint(-5, 5))
         print("Stopping advertiser")
-        nu.send_udp_packet(protocol.make_bye_packet(self.settings["username"]), self.settings["broadcast_address"], int(self.settings["port"]), self.send_sock)
+        nu.send_udp_packet(protocol.make_bye_packet(self.settings["username"]), self.settings["broadcast_address"], int(self.settings["dport"]), self.send_sock)
 
     def start(self):
         self.listener_thread = threading.Thread(target=self.listen_udp)
