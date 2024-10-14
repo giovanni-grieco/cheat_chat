@@ -12,6 +12,7 @@ from convos.message import Message
 from convos.peer import Peer
 from message_parser.crypto_message_parser_proxy import CryptoMessageParserProxy
 from message_parser.message_parser import MessageParser
+from network.daemon_controller import DaemonController
 
 
 class CheatChatDaemon:
@@ -19,9 +20,8 @@ class CheatChatDaemon:
     settings = {}
     message_parser : MessageParser
     address_book : AddressBook
-    listen_sock : socket.socket
-    send_sock : socket.socket
     client_sock : socket.socket
+    daemon_controller : DaemonController
 
 
     def __init__(self, settingss):
@@ -36,11 +36,12 @@ class CheatChatDaemon:
         self.settings["local_ip"] = local_ip
         self.settings["subnet_mask"] = subnet_mask
         self.network_setup()
-        self.stop_event = threading.Event()
 
         #Address book e message parsers dovrebbero essere gestiti da un context e delle factory
         self.address_book = ConcurrentAddressBookProxy(AddressBook())
         self.message_parser = CryptoMessageParserProxy(MessageParser())
+
+        self.daemon_controller = DaemonController(self.settings, self.address_book)
 
     def network_setup(self):
         self.client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -56,12 +57,8 @@ class CheatChatDaemon:
 
     def run(self):
         try:
-            listener_thread.join()
-            advertiser_thread.join()
+            self.daemon_controller.start()
+            self.daemon_controller.wait()
         except KeyboardInterrupt:
-            self.stop_event.set()
-            listener_thread.join()
-            advertiser_thread.join()
-            self.listen_sock.close()
-            self.send_sock.close()
             print("Exiting...")
+            self.daemon_controller.stop()

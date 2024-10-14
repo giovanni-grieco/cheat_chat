@@ -5,8 +5,10 @@ import system_utils as su
 import protocol
 from address_book.address_book import AddressBook
 from convos.peer import Peer
-import network_utils as nu
+import network.network_utils as nu
 import random
+
+from message_parser.message_parser import MessageParser
 
 
 class DaemonController:
@@ -18,12 +20,15 @@ class DaemonController:
     settings = {}
     listener_thread: threading.Thread
     advertiser_thread: threading.Thread
+    message_parser: MessageParser
 
-    def __init__(self, settings):
+    def __init__(self, settings, address_book):
         self.settings=settings
         self.network_setup()
         self.stop_event = threading.Event()
         self.network_setup()
+        self.address_book = address_book
+        self.message_parser = MessageParser()
 
     def network_setup(self):
         self.listen_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -83,6 +88,10 @@ class DaemonController:
         self.advertiser_thread = threading.Thread(target=self.advertise)
         self.listener_thread.start()
         self.advertiser_thread.start()
+
+    def wait(self):
+        self.listener_thread.join()
+        self.advertiser_thread.join()
 
     def stop(self):
         self.stop_event.set()
