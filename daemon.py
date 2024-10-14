@@ -75,9 +75,9 @@ class CheatChatDaemon:
     def parse_message(self, data, address_string):
         event, sender_username, content = self.message_parser.parse_message(data)
         sender: Peer = Peer(sender_username, address_string, time.time())
-        print("Event:" +event.value)
+        #print("Event:" +event.value)
         if event == protocol.MessageType.HELLO:
-            print("HELLO PACKET!")
+            #print("HELLO PACKET!")
             self.address_book.add_peer(sender)  # Forse non funziona lui?
         elif event == protocol.MessageType.BYE:
             self.address_book.remove_peer(sender)
