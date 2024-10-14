@@ -1,6 +1,6 @@
 import socket
 
-import network_utils as nu
+from network import network_utils as nu
 from protocol import make_poke_packet
 
 if __name__ == "__main__":

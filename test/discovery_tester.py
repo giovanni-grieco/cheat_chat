@@ -1,7 +1,7 @@
 import socket
 import time
 
-import network_utils
+from network import network_utils
 import system_utils
 
 if __name__ == "__main__":
