@@ -40,7 +40,9 @@ class CheatChatDaemon:
     def run(self):
         try:
             self.daemon_controller.start()
+            self.client_controller.thread.start()
             self.daemon_controller.wait()
         except KeyboardInterrupt:
             print("Exiting...")
             self.daemon_controller.stop()
+            self.client_controller.stop()
