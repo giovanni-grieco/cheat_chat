@@ -2,11 +2,8 @@ import socket
 
 from controller.client_controller import ClientController
 from network import network_utils as nu
-import protocol
 from address_book.address_book import AddressBook
 from address_book.concurrent_address_book_proxy import ConcurrentAddressBookProxy
-from convos.message import Message
-from convos.peer import Peer
 from message_parser.crypto_message_parser_proxy import CryptoMessageParserProxy
 from message_parser.message_parser import MessageParser
 from controller.daemon_controller import DaemonController

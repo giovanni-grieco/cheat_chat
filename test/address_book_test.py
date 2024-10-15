@@ -1,7 +1,7 @@
 import time
 
 from address_book.address_book import AddressBook
-from convos.peer import Peer
+from address_book.peer import Peer
 
 
 def address_book_add():

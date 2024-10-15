@@ -1,4 +1,4 @@
-from convos.message import Message
+from conversation.message import Message
 from observer.observer import Publisher
 import threading
 
@@ -13,6 +13,10 @@ class Conversation(Publisher):
         with self.lock:
             self.messages.append(message)
             self.notify(message)
+
+    def get_messages(self) -> [] :
+        with self.lock:
+            return self.messages
 
     def __str__(self):
         return f"{self.messages}"

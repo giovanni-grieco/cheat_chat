@@ -4,7 +4,7 @@ import time
 import system_utils as su
 import protocol
 from address_book.address_book import AddressBook
-from convos.peer import Peer
+from address_book.peer import Peer
 import network.network_utils as nu
 import random
 from message_parser.message_parser import MessageParser

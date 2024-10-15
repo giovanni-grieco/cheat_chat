@@ -1,9 +1,7 @@
-import socket
-
 import protocol
 from address_book.address_book import AddressBook
-from convos.message import Message
-from convos.peer import Peer
+from conversation.message import Message
+from address_book.peer import Peer
 import network.network_utils as nu
 
 
@@ -34,3 +32,11 @@ class ClientController:
         else:
             print("Destination not found")
 
+    def start(self):
+        pass
+
+    def wait(self):
+        pass
+
+    def stop(self):
+        pass

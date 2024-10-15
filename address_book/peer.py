@@ -1,5 +1,5 @@
-from convos.conversation import Conversation
-from convos.message import Message
+from conversation.conversation import Conversation
+from conversation.message import Message
 
 
 class Peer:

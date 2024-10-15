@@ -1,4 +1,4 @@
-from convos.peer import Peer
+from address_book.peer import Peer
 
 class AddressBook:
 
